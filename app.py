@@ -16,13 +16,21 @@ def media_reply(text):
     media = api.media_upload(image)
     api.update_status(status='',media_ids = [media.media_id_string],in_reply_to_status_id=text,auto_populate_reply_metadata=True)
 
+
+def dua_lipa(text):
+    api.update_status(status='The oombot never oombots Dua Lipa \U0001F60D',in_reply_to_status_id=text,auto_populate_reply_metadata=True)
+
+
 my_id = int(api.verify_credentials().id_str)
 mention_id = 1
 initialisation_resp = client.get_users_mentions(my_id)
 if initialisation_resp.data != None:
     mention_id = initialisation_resp.data[0].id
 
+
 words = ['attack']
+forbidden = ['@DUALIPA']
+
 
 while True:
     mentions = api.mentions_timeline(since_id=mention_id)
@@ -31,13 +39,19 @@ while True:
         print(f"{mention.author.screen_name} - {mention.text}")
         mention_id = mention.id
         if mention.author.id != my_id:
-            if True in [word in mention.text.lower() for word in words]:
+            if True in [word in mention.text.lower() for word in words] and False in [word in mention.text for word in forbidden]:
                 try:
                     print("Attempting to reply...")
                     media_reply(mention.id)
                     print('replied successfully')
                 except Exception as exc:
                     print(exc)
-
+            elif True in [word in mention.text for word in forbidden]:
+                try:
+                    print("effecting dua protocol")
+                    dua_lipa(mention.id)
+                    print("dua is safe")
+                except Exception as exc:
+                    print(exc)
 
     time.sleep(30)
